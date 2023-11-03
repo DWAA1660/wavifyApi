@@ -78,9 +78,14 @@ def index():
     return "Hello, World!"
 
 
-# @app.route("/test")
-# async def test():
-#     return "Test"
+@app.route("/list_songs")
+def list_songs():
+    returned = []
+    res = db.session.execute(text("SELECT * FROM song")).fetchall()
+    for re in res:
+        returned.append({"id": re[0], "title": re[1], "artist": re[2]})
+        
+    return returned
 
 
 # @app.route("/test2")
