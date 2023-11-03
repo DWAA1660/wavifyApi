@@ -1,7 +1,6 @@
 from flask import Flask
-import sqlite3
 import yt_dlp as youtube_dl
-import requests
+
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request
@@ -9,7 +8,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column
 import shutil
-import time
 import threading
 
 
