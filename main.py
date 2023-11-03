@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_file
 import yt_dlp as youtube_dl
 
 import os
@@ -88,9 +88,14 @@ def list_songs():
     return returned
 
 
-# @app.route("/test2")
-# async def test2():
-#     return "Test2"
+@app.route("/song/<int:id>")
+def song(id: int):
+    returned = []
+    res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
+
+    return send_file(f'static/indb/{res[2]}@{res[1]}', mimetype='audio/mpeg')
+
+
 
 if __name__ == "__main__":
     app.run(debug=False, port=27237, host="0.0.0.0")
