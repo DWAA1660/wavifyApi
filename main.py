@@ -34,7 +34,6 @@ scheduler.start()
 def sync_db():
     with app.app_context():
         res = db.session.execute(text("SELECT * FROM song"))
-        print(res.fetchall())
         for file in os.listdir("static/downloaded"):
             info = file.split("@")
             if file.endswith(".mp3") and file.replace(".mp3", ".webm") not in os.listdir("static/downloaded"):
@@ -67,12 +66,15 @@ def downloadsong(url: str):
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(url, download=False)
                 yt_id = info_dict.get('id')
+                info = info_dict.keys()
+                print(info_dict)
                 res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
                 print(res)
                 if res is None:
                     print("not found")
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                        ydl.download(url)
+                        # ydl.download(url)
+                        print("m")
                 else:
                     print("downloaded already")
                 
