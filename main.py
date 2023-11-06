@@ -12,7 +12,6 @@ import threading
 from dotenv import load_dotenv
 load_dotenv()
 import os
-from fp.fp import FreeProxy
 
 
 app = Flask(__name__)
@@ -54,34 +53,19 @@ scheduler.add_job(sync_db, 'interval', seconds=5)
     
 
 def downloadsong(url: str):
-    try:
-        proxy = FreeProxy(rand=True, https=True).get()
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'verbose': True,
-            'outtmpl': 'static/downloaded/%(id)s@%(artist)s@%(title)s.%(ext)s',
-            'ignoreerrors': True,
-            'proxy': proxy,
-            'no-check-certificate': True
-        }
-    except:
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'verbose': True,
-            'outtmpl': 'static/downloaded/%(id)s@%(artist)s@%(title)s.%(ext)s',
-            'ignoreerrors': True,
-        }
-        
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
+        'verbose': True,
+        'outtmpl': 'static/downloaded/%(id)s@%(artist)s@%(title)s.%(ext)s',
+        'ignoreerrors': True,
+    }
+    
     try:
         
         with app.app_context():
