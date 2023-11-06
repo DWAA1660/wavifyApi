@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Player</title>
+</head>
+<body>
+    <script>
+        // Function to send a POST request to delete a song
+        function deleteSong(songId) {
+            const apiUrl = `http://127.0.0.1:27237/delete/${songId}/{{ key }}`; // Replace with your actual local IP and port
+
+            fetch(apiUrl, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Song with ID ${songId} was deleted successfully.`);
+                    // You can perform additional actions here, such as updating the UI.
+                } else {
+                    console.error(`Failed to delete song with ID ${songId}. Status: ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error(`Error: ${error}`);
+            });
+        }
+    </script>
+    {% for song in songs %}
+        <div>
+            <h3>Title: {{ song['title'] }}</h3>
+            <h3>YouTube ID: {{ song['yt_id'] }}</h3>
+            <button data-id="{{ song['id'] }}" onclick="deleteSong({{ song['id'] }})">Delete</button>
+        </div>
+    {% endfor %}
+</body>
+</html>

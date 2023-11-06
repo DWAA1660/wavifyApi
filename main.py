@@ -1,4 +1,4 @@
-from flask import Flask, send_file
+from flask import Flask, send_file, render_template, redirect
 import yt_dlp as youtube_dl
 
 import os
@@ -9,6 +9,9 @@ from sqlalchemy import Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column
 import shutil
 import threading
+from dotenv import load_dotenv
+load_dotenv()
+import os
 
 
 app = Flask(__name__)
@@ -66,15 +69,13 @@ def downloadsong(url: str):
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(url, download=False)
                 yt_id = info_dict.get('id')
-                info = info_dict.keys()
-                print(info_dict)
                 res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
                 print(res)
                 if res is None:
                     print("not found")
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                        # ydl.download(url)
-                        print("m")
+                        ydl.download(url)
+                        
                 else:
                     print("downloaded already")
                 
@@ -103,12 +104,37 @@ def list_songs():
 
 @app.route("/song/<int:id>")
 def song(id: int):
-    returned = []
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
 
     return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
 
+@app.route("/delete/<int:id>/<key>", methods=['POST'])
+def delete(id: int, key: str):
+    real_key = os.getenv("key")
+    if key != real_key:
+        return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
+    res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
+    if res is not None:
+        db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
+        db.session.commit()
+        os.remove(f"static/indb/{res[3]}@{res[2]}@{res[1]}")
+        return {"message": "deleted"}
+    else:
+        return {"error": "Song with that id doesnt exist"}
 
+@app.route("/admin/<key>", methods=['GET'])
+def admin(key: str):
+    real_key = os.getenv("key")
+    if key != real_key:
+        return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
+    returned = []
+    with app.app_context():
+        res = db.session.execute(text("SELECT * FROM song")).fetchall()
+        for re in res:
+            returned.append({"id": re[0], "title": re[1], "artist": re[2], "yt_id": re[3]})
+    
+    return render_template("admin.html", songs=returned, key=key)
+            
 
 if __name__ == "__main__":
     app.run(debug=False, port=27237, host="0.0.0.0")
