@@ -54,7 +54,8 @@ scheduler.add_job(sync_db, 'interval', seconds=5)
     
 
 def downloadsong(url: str):
-    proxy = FreeProxy(timeout=5, rand=True, https=True).get()
+    proxy = FreeProxy(rand=True, https=True).get()
+    
     try:
         ydl_opts = {
             'format': 'bestaudio/best',
