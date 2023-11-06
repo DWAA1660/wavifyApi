@@ -66,7 +66,8 @@ def downloadsong(url: str):
             'verbose': True,
             'outtmpl': 'static/downloaded/%(id)s@%(artist)s@%(title)s.%(ext)s',
             'ignoreerrors': True,
-            'proxy': proxy
+            'proxy': proxy,
+            'no-check-certificate': True
         }
         with app.app_context():
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
