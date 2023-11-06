@@ -104,7 +104,7 @@ def song(id: int):
     returned = []
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
 
-    return send_file(f'static/indb/{res[2]}@{res[1]}', mimetype='audio/mpeg')
+    return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
 
 
 
