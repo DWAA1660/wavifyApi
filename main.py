@@ -54,9 +54,8 @@ scheduler.add_job(sync_db, 'interval', seconds=5)
     
 
 def downloadsong(url: str):
-    proxy = FreeProxy(rand=True, https=True).get()
-    
     try:
+        proxy = FreeProxy(rand=True, https=True).get()
         ydl_opts = {
             'format': 'bestaudio/best',
             'postprocessors': [{
@@ -70,6 +69,21 @@ def downloadsong(url: str):
             'proxy': proxy,
             'no-check-certificate': True
         }
+    except:
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'verbose': True,
+            'outtmpl': 'static/downloaded/%(id)s@%(artist)s@%(title)s.%(ext)s',
+            'ignoreerrors': True,
+        }
+        
+    try:
+        
         with app.app_context():
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(url, download=False)
