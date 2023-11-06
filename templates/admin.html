@@ -7,7 +7,7 @@
     <script>
         // Function to send a POST request to delete a song
         function deleteSong(songId) {
-            const apiUrl = `http://127.0.0.1:27237/delete/${songId}/{{ key }}`; // Replace with your actual local IP and port
+            const apiUrl = `http://http://node2.lunes.host:27237/delete/${songId}/{{ key }}`; // Replace with your actual local IP and port
 
             fetch(apiUrl, {
                 method: 'POST'
