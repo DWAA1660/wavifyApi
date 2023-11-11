@@ -150,7 +150,7 @@ def fix(key: str):
                 creator = file.split("@")[2].split(" - ")[0]
                 with app.app_context():
                     new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
-                    db.session.execute(text(f"UPDATE song SET artist = '{creator}', title = '{new_title}' WHERE yt_id = {file.split('@')[0]};"))
+                    db.session.execute(text(f"UPDATE song SET artist = '{creator}', title = '{new_title}' WHERE yt_id = '{file.split('@')[0]}';"))
                     os.rename(file, new_title)
     
 if __name__ == "__main__":
