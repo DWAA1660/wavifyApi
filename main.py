@@ -149,8 +149,11 @@ def fix(key: str):
             if " - " in file.split("@")[2]:
                 creator = file.split("@")[2].split(" - ")[0]
                 with app.app_context():
+                    yt_id = file.split('@')[0]
                     new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
-                    db.session.execute(text(f"UPDATE song SET artist = '{creator}', title = '{new_title}' WHERE yt_id = '{file.split('@')[0]}';"))
+                    query = text("UPDATE song SET artist = :creator, title = :new_title WHERE yt_id = :yt_id")
+                    db.session.execute(query, {"creator": creator, "new_title": new_title, "yt_id": yt_id})
+                    db.session.commit()
                     os.rename(f"static/indb/{file}", f"static/indb/{new_title}")
     
 if __name__ == "__main__":
