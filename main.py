@@ -151,7 +151,7 @@ def fix(key: str):
                 with app.app_context():
                     new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
                     db.session.execute(text(f"UPDATE song SET artist = '{creator}', title = '{new_title}' WHERE yt_id = '{file.split('@')[0]}';"))
-                    os.rename(file, new_title)
+                    os.rename(f"static/indb/{file}", f"static/indb/{new_title}")
     
 if __name__ == "__main__":
     app.run(debug=False, port=27237, host="0.0.0.0")
