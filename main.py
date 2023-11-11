@@ -141,22 +141,24 @@ def admin(key: str):
             
 @app.route("/fix/<key>")
 def fix(key: str):
-    real_key = os.getenv("key")
-    if key != real_key:
-        return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
-    for file in os.listdir("static/indb"):
-        if file.split("@")[1] == "NA":
-            if " - " in file.split("@")[2]:
-                creator = file.split("@")[2].split(" - ")[0]
-                with app.app_context():
+    with app.app_context():
+        real_key = os.getenv("key")
+        if key != real_key:
+            return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
+        for file in os.listdir("static/indb"):
+            if file.split("@")[1] == "NA":
+                if " - " in file.split("@")[2]:
+                    artist = file.split("@")[2].split(" - ")[0]
+                
                     yt_id = file.split('@')[0]
-                    new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
-                    query = text("UPDATE song SET artist = :creator, title = :new_title WHERE yt_id = :yt_id")
+                    new_title = file.replace("NA", artist).replace(f"{artist} - ", "")
+                    query = text("UPDATE song SET artist = ?, title = ? WHERE yt_id = ?")
                     print(db.session.execute(text("SELECT * FROM song where yt_id = :yt_id"), {"yt_id": yt_id}).fetchone())
-                    db.session.execute(query, {"creator": creator, "new_title": new_title, "yt_id": yt_id})
+                    db.session.execute(query, (artist, new_title, yt_id,))
 
                     os.rename(f"static/indb/{file}", f"static/indb/{new_title}")
-    db.session.commit()
+        db.session.commit()
+    
     return "done"
 if __name__ == "__main__":
     app.run(debug=False, port=27237, host="0.0.0.0")
