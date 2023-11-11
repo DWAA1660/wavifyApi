@@ -153,7 +153,7 @@ def fix(key: str):
                     new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
                     query = text("UPDATE song SET artist = :creator, title = :new_title WHERE yt_id = :yt_id")
                     print(query)
-                    print(db.session.execute(text("SELECT * FROM song where yt_id = :yt_id", {"yt_id": yt_id})))
+                    print(db.session.execute(text("SELECT * FROM song where yt_id = :yt_id"), {"yt_id": yt_id}))
                     db.session.execute(query, {"creator": creator, "new_title": new_title, "yt_id": yt_id})
 
                     os.rename(f"static/indb/{file}", f"static/indb/{new_title}")
