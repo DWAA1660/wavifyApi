@@ -139,6 +139,19 @@ def admin(key: str):
     
     return render_template("admin.html", songs=returned, key=key)
             
-
+@app.route("/fix/<key>")
+def fix(key: str):
+    real_key = os.getenv("key")
+    if key != real_key:
+        return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
+    for file in os.listdir("static/indb"):
+        if file.split("@")[1] == "NA":
+            if " - " in file.split("@")[2]:
+                creator = file.split("@")[2].split(" - ")[0]
+                with app.app_context():
+                    new_title = file.replace("NA", creator).replace(f"{creator} - ", "")
+                    db.session.execute(text(f"UPDATE tasks SET artist = '{creator}', title = '{new_title}' WHERE yt_id = {file.split('@')[0]};"))
+                    os.rename(file, new_title)
+    
 if __name__ == "__main__":
     app.run(debug=False, port=27237, host="0.0.0.0")
