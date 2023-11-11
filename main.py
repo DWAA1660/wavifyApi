@@ -1,4 +1,4 @@
-from flask import Flask, send_file, render_template, redirect, jsonify
+from flask import Flask, send_file, render_template, redirect
 import yt_dlp as youtube_dl
 
 import os
@@ -13,8 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 from proxy import get_proxy
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
 
 app = Flask(__name__)
 
@@ -97,40 +96,14 @@ def index():
     return "Hello, World!"
 
 
-def preprocess_text(text):
-    # Add your text preprocessing logic here
-    return text.lower()
-
 @app.route("/list_songs")
 def list_songs():
-    query = request.args.get("query", "")
     returned = []
-
-    # Fetch all songs from the database
-    all_songs = db.session.execute(text("SELECT * FROM song")).fetchall()
-
-    # Preprocess the query and songs
-    query = preprocess_text(query)
-    song_texts = [preprocess_text(f"{song[1]} {song[2]}") for song in all_songs]
-
-    # Use TF-IDF for vectorization
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform([query] + song_texts)
-
-    # Calculate cosine similarity
-    cosine_similarities = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
-
-    # Combine song data with similarity scores
-    songs_with_similarity = list(zip(all_songs, cosine_similarities))
-
-    # Sort by similarity in descending order
-    sorted_songs = sorted(songs_with_similarity, key=lambda x: x[1], reverse=True)
-
-    # Prepare the response
-    for (song, similarity) in sorted_songs:
-        returned.append({"id": song[0], "title": song[1], "artist": song[2], "yt_id": song[3], "similarity": similarity})
-
-    return jsonify(returned)
+    res = db.session.execute(text("SELECT * FROM song")).fetchall()
+    for re in res:
+        returned.append({"id": re[0], "title": re[1], "artist": re[2], "yt_id": re[3]})
+        
+    return returned
 
 
 @app.route("/song/<int:id>")
