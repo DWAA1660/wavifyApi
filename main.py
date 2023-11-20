@@ -136,9 +136,10 @@ def delete(id: int, key: str):
         return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
     if res is not None:
-        db.session.add(BlacklistedSongs(yt_id=re[3]))
-        db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
-        db.session.commit()
+        with app.app_context():
+            db.session.add(BlacklistedSongs(yt_id=re[3]))
+            db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
+            db.session.commit()
         os.remove(f"static/indb/{res[3]}@{res[2]}@{res[1]}")
         return {"message": "deleted"}
     else:
