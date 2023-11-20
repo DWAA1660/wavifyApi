@@ -100,7 +100,9 @@ def index():
     res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
     if res is not None:
         threading.Thread(target=downloadsong, args=(url,)).start()
-    return "Hello, World!"
+        return "Downloading"
+    else:
+        return "Blacklisted"
 
 
 @app.route("/list_songs")
