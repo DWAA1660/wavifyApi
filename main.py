@@ -112,6 +112,12 @@ def song(id: int):
 
     return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
 
+@app.route("/song_from_yt/<str:yt_id>")
+def song(yt_id: str):
+    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"id": yt_id}).fetchone()
+
+    return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
+
 @app.route("/delete/<int:id>/<key>", methods=['POST'])
 def delete(id: int, key: str):
     real_key = os.getenv("key")
