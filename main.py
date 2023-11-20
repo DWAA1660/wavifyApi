@@ -114,7 +114,8 @@ def song(id: int):
 
 @app.route("/song_from_yt/<yt_id>")
 def song_from_yt(yt_id: str):
-    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"id": yt_id}).fetchone()
+    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
+
 
     return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
 
