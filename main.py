@@ -1,4 +1,4 @@
-from flask import Flask, send_file, render_template, redirect
+from flask import Flask, send_file, render_template, redirect, abort
 import yt_dlp as youtube_dl
 
 import os
@@ -126,7 +126,8 @@ def song(id: int):
 def song_from_yt(yt_id: str):
     res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
 
-
+    if res is None:
+        abort(404)
     return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
 
 @app.route("/delete/<int:id>/<key>", methods=['POST'])
