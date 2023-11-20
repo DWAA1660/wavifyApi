@@ -27,6 +27,10 @@ class Song(db.Model):
     artist = db.Column(db.String(255), nullable=False)
     yt_id = db.Column(db.String(255), nullable=False)
 
+class BlacklistedSongs(db.Model):
+    yt_id = db.Column(db.String(255), nullable=False, primary_key=True)
+
+
 
 with app.app_context():
     db.create_all()
@@ -92,7 +96,10 @@ def downloadsong(url: str):
 @app.route("/download", methods=["POST"])
 def index():
     url = request.headers.get("url")
-    threading.Thread(target=downloadsong, args=(url,)).start()
+    yt_id = url.split("watch?v=")[1].split("&")[0]
+    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
+    if res is not None:
+        threading.Thread(target=downloadsong, args=(url,)).start()
     return "Hello, World!"
 
 
@@ -126,6 +133,7 @@ def delete(id: int, key: str):
         return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
     if res is not None:
+        db.session.add(BlacklistedSongs(yt_id=re[3]))
         db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
         db.session.commit()
         os.remove(f"static/indb/{res[3]}@{res[2]}@{res[1]}")
