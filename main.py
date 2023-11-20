@@ -102,6 +102,7 @@ def index():
         threading.Thread(target=downloadsong, args=(url,)).start()
         return "Downloading"
     else:
+        print("BLACKLISTED")
         return "Blacklisted"
 
 
