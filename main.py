@@ -44,10 +44,10 @@ def sync_db():
                 if file not in os.listdir("static/indb"):
                     song = Song(title=info[2], artist=info[1], yt_id=info[0])
                     db.session.add(song)
-                    db.session.commit()
                     shutil.move(f"static/downloaded/{file}", f"static/indb")
                 else:
                     os.remove(f"static/downloaded/{file}")
+        db.session.commit()
 
 scheduler.add_job(sync_db, 'interval', seconds=5)
 
