@@ -97,7 +97,7 @@ def downloadsong(url: str):
 def index():
     url = request.headers.get("url")
     yt_id = url.split("watch?v=")[1].split("&")[0]
-    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
+    res = db.session.execute(text("SELECT * FROM blacklistedsongs WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
     if res is not None:
         threading.Thread(target=downloadsong, args=(url,)).start()
         return "Downloading"
