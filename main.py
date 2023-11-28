@@ -146,7 +146,10 @@ def delete(id: int, key: str):
             db.session.add(BlacklistedSongs(yt_id=res[3]))
             db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
             db.session.commit()
-        os.remove(f"static/indb/{res[3]}@{res[2]}@{res[1]}")
+        try:
+            os.remove(f"static/indb/{res[3]}@{res[2]}@{res[1]}")
+        except:
+            os.remove(f"static/indb/{res[1]}") 
         return {"message": "deleted"}
     else:
         return {"error": "Song with that id doesnt exist"}
