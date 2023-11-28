@@ -128,8 +128,10 @@ def song_from_yt(yt_id: str):
 
     if res is None:
         abort(404)
-    return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
-
+    try:
+        return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
+    except:
+        return send_file(f'static/indb/{res[2]}', mimetype='audio/mpeg')
 @app.route("/delete/<int:id>/<key>", methods=['POST'])
 def delete(id: int, key: str):
     real_key = os.getenv("key")
