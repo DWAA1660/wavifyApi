@@ -1,5 +1,5 @@
-import random
 import requests
+import secrets
 
 def check_if_work(proxy):
     try:
@@ -12,7 +12,7 @@ def check_if_work(proxy):
 def get_proxy():
     with open('proxies.txt', 'r') as f:
         proxies = f.read().splitlines()  # Read all proxy lines into a list
-        random.shuffle(proxies)  # Shuffle the list to randomize proxy selection
+        secrets.SystemRandom().shuffle(proxies)  # Shuffle the list to randomize proxy selection
         for proxy in proxies:
             if check_if_work("socks5://" + proxy):
                 return "socks5://" + proxy
