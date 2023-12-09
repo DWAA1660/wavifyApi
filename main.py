@@ -116,6 +116,21 @@ def list_songs():
     return returned
 
 
+@app.route("/song_info/<int:id>")
+def song_info(id: int):
+    res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
+    if res is not None:
+        return {"id": res[0], "title": res[1], "artist": res[2], "yt_id": res[3]}
+    return "Song not found"
+
+@app.route("/song_from_yt_info/<int:id>")
+def song_from_yt_info(yt_id: int):
+    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
+    if res is not None:
+        return {"id": res[0], "title": res[1], "artist": res[2], "yt_id": res[3]}
+    return "Song not found"
+
+
 @app.route("/song/<int:id>")
 def song(id: int):
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
