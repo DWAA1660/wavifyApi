@@ -5,3 +5,4 @@ __pycache__/*
 .env
 instance/database.db
 *.db
+instance/database.db.old
