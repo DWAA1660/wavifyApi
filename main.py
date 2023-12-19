@@ -97,8 +97,7 @@ def downloadsong(url: str):
 def index():
     url = request.headers.get("url")
     yt_id = url.split("watch?v=")[1].split("&")[0]
-    res = db.session.execute(text("SELECT * FROM blacklisted_songs WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
-    if res is None:
+    if (res := db.session.execute(text("SELECT * FROM blacklisted_songs WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()) is None:
         threading.Thread(target=downloadsong, args=(url,)).start()
         return "Downloading"
     else:
@@ -118,15 +117,13 @@ def list_songs():
 
 @app.route("/song_info/<int:id>")
 def song_info(id: int):
-    res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
-    if res is not None:
+    if (res := db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()) is not None:
         return {"id": res[0], "title": res[1], "artist": res[2], "yt_id": res[3]}
     return "Song not found"
 
 @app.route("/song_from_yt_info/<yt_id>")
 def song_from_yt_info(yt_id: str):
-    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
-    if res is not None:
+    if (res := db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()) is not None:
         return {"id": res[0], "title": res[1], "artist": res[2], "yt_id": res[3]}
     return "Song not found"
 
@@ -142,9 +139,8 @@ def song(id: int):
 
 @app.route("/song_from_yt/<yt_id>")
 def song_from_yt(yt_id: str):
-    res = db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()
 
-    if res is None:
+    if (res := db.session.execute(text("SELECT * FROM song WHERE yt_id = :yt_id"), {"yt_id": yt_id}).fetchone()) is None:
         abort(404)
     try:
         return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
@@ -155,8 +151,7 @@ def delete(id: int, key: str):
     real_key = os.getenv("key")
     if key != real_key:
         return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley")
-    res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
-    if res is not None:
+    if (res := db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()) is not None:
         with app.app_context():
             db.session.add(BlacklistedSongs(yt_id=res[3]))
             db.session.execute(text("DELETE FROM song WHERE id = :id"), {"id": id})
