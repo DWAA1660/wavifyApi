@@ -48,7 +48,7 @@ def sync_db():
                 if file not in os.listdir("static/indb"):
                     song = Song(title=info[2], artist=info[1], yt_id=info[0])
                     db.session.add(song)
-                    shutil.move(f"static/downloaded/{file}", f"static/indb")
+                    shutil.move(f"static/downloaded/{file}", "static/indb")
                 else:
                     os.remove(f"static/downloaded/{file}")
         db.session.commit()
