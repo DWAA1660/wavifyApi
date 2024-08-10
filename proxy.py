@@ -1,10 +1,11 @@
 import requests
 import secrets
+from security import safe_requests
 
 def check_if_work(proxy):
     try:
         # You can use a website like https://www.google.com to test if the proxy works
-        response = requests.get("https://www.google.com", proxies={"http": proxy, "https": proxy}, timeout=5)
+        response = safe_requests.get("https://www.google.com", proxies={"http": proxy, "https": proxy}, timeout=5)
         return response.status_code == 200
     except requests.RequestException:
         return False
