@@ -1,4 +1,4 @@
-from flask import Flask, send_file, render_template, redirect, abort
+from flask import Flask, render_template, redirect, abort
 import yt_dlp as youtube_dl
 
 import os
@@ -10,6 +10,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 import shutil
 import threading
 from dotenv import load_dotenv
+import flask
+from pathlib import Path
+
 load_dotenv()
 import os
 from proxy import get_proxy
@@ -136,9 +139,9 @@ def song(id: int):
     res = db.session.execute(text("SELECT * FROM song WHERE id = :id"), {"id": id}).fetchone()
 
     try:
-        return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
+        return flask.send_from_directory((p := Path(f'static/indb/{res[3]}@{res[2]}@{res[1]}')).parent, p.name, mimetype='audio/mpeg')
     except:
-        return send_file(f'static/indb/{res[1]}', mimetype='audio/mpeg')
+        return flask.send_from_directory((p := Path(f'static/indb/{res[1]}')).parent, p.name, mimetype='audio/mpeg')
 
 @app.route("/song_from_yt/<yt_id>")
 def song_from_yt(yt_id: str):
@@ -147,9 +150,9 @@ def song_from_yt(yt_id: str):
     if res is None:
         abort(404)
     try:
-        return send_file(f'static/indb/{res[3]}@{res[2]}@{res[1]}', mimetype='audio/mpeg')
+        return flask.send_from_directory((p := Path(f'static/indb/{res[3]}@{res[2]}@{res[1]}')).parent, p.name, mimetype='audio/mpeg')
     except:
-        return send_file(f'static/indb/{res[1]}', mimetype='audio/mpeg')
+        return flask.send_from_directory((p := Path(f'static/indb/{res[1]}')).parent, p.name, mimetype='audio/mpeg')
 @app.route("/delete/<int:id>/<key>", methods=['POST'])
 def delete(id: int, key: str):
     real_key = os.getenv("key")
